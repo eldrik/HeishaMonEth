@@ -305,6 +305,11 @@ esp8266 by esp8266 community version 3.0.2 [Arduino](https://github.com/esp8266/
 
 All the [libs we use](LIBSUSED.md) necessary for compiling.
 
+Those board options are needed to compile.
+
+Tools > MMU > 16KB cache + 48KB IRAM + 16KB 2nd Heap (not shared)
+Tools > Non-32-Bit Access > Byte/Word access to IRAM/PROGMEM (very slow)
+
 
 ## MQTT topics
 [Current list of documented MQTT topics can be found here](MQTT-Topics.md)
