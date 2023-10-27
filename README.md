@@ -308,6 +308,7 @@ All the [libs we use](LIBSUSED.md) necessary for compiling.
 Those board options are needed to compile.
 
 Tools > MMU > 16KB cache + 48KB IRAM + 16KB 2nd Heap (not shared)
+
 Tools > Non-32-Bit Access > Byte/Word access to IRAM/PROGMEM (very slow)
 
 
