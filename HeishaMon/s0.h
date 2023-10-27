@@ -2,8 +2,8 @@
 #include "src/common/webserver.h"
 
 #define NUM_S0_COUNTERS 2
-#define DEFAULT_S0_PIN_1 12  // S0_1 pin, for now a static config - should be in config menu later
-#define DEFAULT_S0_PIN_2 14  // S0_2 pin, for now a static config - should be in config menu later
+#define DEFAULT_S0_PIN_1 4  // S0_1 pin, for now a static config - should be in config menu later // von 12 auf 4 abgeändert 12 wird für Ethernet benötigt
+#define DEFAULT_S0_PIN_2 5 // S0_2 pin, for now a static config - should be in config menu later // von 14 auf 5 abgeändert 14 wird für Ethernet benötigt
 
 struct s0SettingsStruct {
   byte gpiopin = 255;
