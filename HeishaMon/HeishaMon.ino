@@ -7,7 +7,9 @@
 #include <ArduinoOTA.h>
 #include <DNSServer.h>
 #include <DoubleResetDetect.h>
-
+#include <SPI.h>
+#include <W5100lwIP.h>
+//#include <W5500lwIP.h>
 #include <ArduinoJson.h>
 
 #include "lwip/apps/sntp.h"
