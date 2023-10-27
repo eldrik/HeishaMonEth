@@ -229,7 +229,7 @@ void mqtt_reconnect()
       sprintf(topic, "%s/%s", heishamonSettings.mqtt_topic_base, mqtt_willtopic);
       mqtt_client.publish(topic, "Online");
       sprintf(topic, "%s/%s", heishamonSettings.mqtt_topic_base, mqtt_iptopic);
-      mqtt_client.publish(topic, WiFi.localIP().toString().c_str(), true);
+      mqtt_client.publish(topic, eth.localIP().toString().c_str(), true);
 
       if (heishamonSettings.use_s0) { // connect to s0 topic to retrieve older watttotal from mqtt
         sprintf_P(mqtt_topic, PSTR("%s/%s/WatthourTotal/1"), heishamonSettings.mqtt_topic_base, mqtt_topic_s0);
@@ -1263,7 +1263,7 @@ void loop() {
   if ((unsigned long)(millis() - lastRunTime) > (1000 * heishamonSettings.waitTime)) {
     lastRunTime = millis();
     //check mqtt
-    if ( (WiFi.isConnected()) && (!mqtt_client.connected()) )
+    if ( (eth.connected()) && (!mqtt_client.connected()) || (WiFi.isConnected()) && (!mqtt_client.connected()) ) // um Abfrage Ethernet Connected erweitert um mqtt reconnect zu bewirken
     {
       log_message(_F("Lost MQTT connection!"));
       mqtt_reconnect();
