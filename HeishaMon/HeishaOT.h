@@ -5,8 +5,8 @@
 #include "src/common/webserver.h"
 
 // opentherm
-const int inOTPin = 3; //RX pin from ESP8266
-const int outOTPin = 1; //TX pin from ESP8266
+const int inOTPin = 0; //RX pin from ESP8266  // von 3 auf 0 geändert um Pin 1 und 3 (TX / RX) weiter für die Kommunikation zur Wärmepumpe zu benutzen
+const int outOTPin = 0; //TX pin from ESP8266 // // von 1 auf 0 geändert um Pin 1 und 3 (TX / RX) weiter für die Kommunikation zur Wärmepumpe zu benutzen
 
 // mqtt
 extern const char* mqtt_topic_opentherm;
