@@ -23,6 +23,11 @@
 #include "rules.h"
 #include "version.h"
 
+#define CSPIN 16
+Wiznet5100lwIP eth(CSPIN);
+// Wiznet5500lwIP eth(CSPIN);
+byte mac[] = {0x00, 0xAA, 0xBB, 0xCC, 0xDE, 0x02};
+
 DNSServer dnsServer;
 
 //to read bus voltage in stats
@@ -500,6 +505,44 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length) {
   }
 }
 
+void setupETH() {
+  delay(1000);
+  Serial.begin(115200);
+  Serial.println();
+  Serial.print(ESP.getFullVersion());
+  Serial.println();
+
+  SPI.begin();
+  SPI.setBitOrder(MSBFIRST);
+  SPI.setDataMode(SPI_MODE0);
+  SPI.setFrequency(4000000);
+
+ // eth.setDefault(); // use ethernet for default route
+
+// IPAddress ip(10, 0, 81, 249);
+// IPAddress gw(10, 0, 81, 1);
+// IPAddress nm(255, 255, 255, 0);
+// eth.config(ip, gw, nm, gw);
+  eth.setDefault(); // use ethernet for default route
+  int present = eth.begin(mac);
+  if (!present) {
+    Serial.println("no ethernet hardware present");
+    while(1);
+  }
+  
+  Serial.print("connecting ethernet");
+  while (!eth.connected()) {
+    Serial.print(".");
+    delay(1000);
+  }
+  Serial.println();
+  Serial.print("ethernet ip address: ");
+  Serial.println(eth.localIP());
+  Serial.print("ethernet subnetMask: ");
+  Serial.println(eth.subnetMask());
+  Serial.print("ethernet gateway: ");
+  Serial.println(eth.gatewayIP());
+}
 void setupOTA() {
   // Port defaults to 8266
   ArduinoOTA.setPort(8266);
@@ -949,17 +992,17 @@ void switchSerial() {
   Serial.flush();
   Serial.end();
   Serial.begin(9600, SERIAL_8E1);
-  Serial.flush();
+  //Serial.flush();
   //swap to gpio13 (D7) and gpio15 (D8)
-  Serial.swap();
+  //Serial.swap(); // auskommentiert um GPIO 13 nicht zu belegen, wird für Ethernet benötigt
   //turn on GPIO's on tx/rx for opentherm part
-  pinMode(1, FUNCTION_3);
-  pinMode(3, FUNCTION_3);
+  //pinMode(1, FUNCTION_3); // auskommentiert um Pin 1 und 3 (TX / RX) weiter für die Kommunikation zur Wärmepumpe zu benutzen
+  //pinMode(3, FUNCTION_3); // auskommentiert um Pin 1 und 3 (TX / RX) weiter für die Kommunikation zur Wärmepumpe zu benutzen
 
-  setupGPIO(heishamonSettings.gpioSettings); //switch extra GPIOs to configured mode
+  // setupGPIO(heishamonSettings.gpioSettings); //switch extra GPIOs to configured mode
 
   //mosfet output enable
-  pinMode(5, OUTPUT);
+ // pinMode(0, OUTPUT); // von 5 auf 0 abgeändert um Pin 5 für S0 zu verwenden
 
   //try to detect if cz-taw1 is connected in parallel
   if (!heishamonSettings.listenonly) {
@@ -970,7 +1013,7 @@ void switchSerial() {
     else {
       //enable gpio15 after boot using gpio5 (D1) which enables the level shifter for the tx to panasonic
       //do not enable if listen only to keep the line floating
-      digitalWrite(5, HIGH);
+      digitalWrite(0, HIGH); // von 5 auf 0 abgeändert um den Pin für S0 verwenden zu können
     }
   }
 }
@@ -1087,6 +1130,8 @@ void setup() {
 
   loadSettings(&heishamonSettings);
 
+  setupETH();
+
   setupWifi(&heishamonSettings);
 
   setupMqtt();
@@ -1106,7 +1151,7 @@ void setup() {
   //OT begin must be after serial setup
   if (heishamonSettings.opentherm) {
     //always enable mosfets if opentherm is used
-    digitalWrite(5, HIGH);
+    digitalWrite(0, HIGH); // von 5 auf 0 abgeändert um Pin 5 für S0 zu verwenden
     HeishaOTSetup();
   }
 
