@@ -7,7 +7,7 @@
 #include "src/common/webserver.h"
 
 #define MAX_DALLAS_SENSORS 15
-#define ONE_WIRE_BUS 4  // DS18B20 pin, for now a static config - should be in config menu later
+#define ONE_WIRE_BUS 15  // DS18B20 pin, for now a static config - should be in config menu later // von 4 auf Pin 15 abgeändert um GPIO 4 für S0 zu verwenden
 
 struct dallasDataStruct {
   float temperature = -127.0;
