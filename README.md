@@ -301,7 +301,7 @@ To make things easy you can order a completed PCB from some project members: \
 
 ## Building the arduino image yourself
 boards: \
-esp8266 by esp8266 community version 3.0.2 [Arduino](https://github.com/esp8266/Arduino/releases/tag/3.0.2)
+esp8266 by esp8266 community version 3.1.2 [Arduino](https://github.com/esp8266/Arduino/releases/tag/3.1.2)
 
 All the [libs we use](LIBSUSED.md) necessary for compiling.
 
