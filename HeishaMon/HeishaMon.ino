@@ -1070,6 +1070,9 @@ void timer_cb(int nr) {
           setupWifi(&heishamonSettings);
         } break;
       case -4: {
+          setupETH();
+        } break;
+      case -5: {
           if (rules_parse("/rules.new") == -1) {
             logprintln_P(F("new ruleset failed to parse, using previous ruleset"));
             rules_parse("/rules.txt");
