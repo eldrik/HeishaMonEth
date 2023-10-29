@@ -229,7 +229,7 @@ void mqtt_reconnect()
       sprintf(topic, "%s/%s", heishamonSettings.mqtt_topic_base, mqtt_willtopic);
       mqtt_client.publish(topic, "Online");
       sprintf(topic, "%s/%s", heishamonSettings.mqtt_topic_base, mqtt_wifi_iptopic);
-      mqtt_client.publish(topic, Wifi.localIP().toString().c_str(), true);
+      mqtt_client.publish(topic, WiFi.localIP().toString().c_str(), true);
       sprintf(topic, "%s/%s", heishamonSettings.mqtt_topic_base, mqtt_eth_iptopic);
       mqtt_client.publish(topic, eth.localIP().toString().c_str(), true);
       
