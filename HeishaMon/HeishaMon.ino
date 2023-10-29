@@ -228,9 +228,11 @@ void mqtt_reconnect()
       mqtt_client.subscribe(topic);
       sprintf(topic, "%s/%s", heishamonSettings.mqtt_topic_base, mqtt_willtopic);
       mqtt_client.publish(topic, "Online");
-      sprintf(topic, "%s/%s", heishamonSettings.mqtt_topic_base, mqtt_iptopic);
+      sprintf(topic, "%s/%s", heishamonSettings.mqtt_topic_base, mqtt_wifi_iptopic);
+      mqtt_client.publish(topic, Wifi.localIP().toString().c_str(), true);
+      sprintf(topic, "%s/%s", heishamonSettings.mqtt_topic_base, mqtt_eth_iptopic);
       mqtt_client.publish(topic, eth.localIP().toString().c_str(), true);
-
+      
       if (heishamonSettings.use_s0) { // connect to s0 topic to retrieve older watttotal from mqtt
         sprintf_P(mqtt_topic, PSTR("%s/%s/WatthourTotal/1"), heishamonSettings.mqtt_topic_base, mqtt_topic_s0);
         mqtt_client.subscribe(mqtt_topic);
