@@ -228,9 +228,9 @@ void mqtt_reconnect()
       mqtt_client.subscribe(topic);
       sprintf(topic, "%s/%s", heishamonSettings.mqtt_topic_base, mqtt_willtopic);
       mqtt_client.publish(topic, "Online");
-      sprintf(topic, "%s/%s", heishamonSettings.mqtt_topic_base, mqtt_wifi_iptopic);
+      sprintf(topic, "%s/%s", heishamonSettings.mqtt_topic_base, mqtt_iptopic);
       mqtt_client.publish(topic, WiFi.localIP().toString().c_str(), true);
-      sprintf(topic, "%s/%s", heishamonSettings.mqtt_topic_base, mqtt_eth_iptopic);
+      sprintf(topic, "%s/%s", heishamonSettings.mqtt_topic_base, mqtt_ethiptopic);
       mqtt_client.publish(topic, eth.localIP().toString().c_str(), true);
       
       if (heishamonSettings.use_s0) { // connect to s0 topic to retrieve older watttotal from mqtt
@@ -814,9 +814,9 @@ int8_t webserver_cb(struct webserver_t *client, void *dat) {
               if ((!heishamonSettings.opentherm) && (heishamonSettings.listenonly)) {
                 //make sure we disable TX to heatpump-RX using the mosfet so this line is floating and will not disturb cz-taw1
                 //does not work for opentherm version currently
-                digitalWrite(5, LOW);
+                //digitalWrite(5, LOW);
               } else {
-                digitalWrite(5, HIGH);
+                //digitalWrite(5, HIGH);
               }
               switch (client->route) {
                 case 111: {
@@ -1017,7 +1017,7 @@ void switchSerial() {
     else {
       //enable gpio15 after boot using gpio5 (D1) which enables the level shifter for the tx to panasonic
       //do not enable if listen only to keep the line floating
-      digitalWrite(0, HIGH); // von 5 auf 0 abgeändert um den Pin für S0 verwenden zu können
+     // digitalWrite(0, HIGH); // von 5 auf 0 abgeändert um den Pin für S0 verwenden zu können
     }
   }
 }
@@ -1158,8 +1158,8 @@ void setup() {
   //OT begin must be after serial setup
   if (heishamonSettings.opentherm) {
     //always enable mosfets if opentherm is used
-    digitalWrite(0, HIGH); // von 5 auf 0 abgeändert um Pin 5 für S0 zu verwenden
-    HeishaOTSetup();
+    //digitalWrite(0, HIGH); // von 5 auf 0 abgeändert um Pin 5 für S0 zu verwenden
+    //HeishaOTSetup();
   }
 
   rst_info *resetInfo = ESP.getResetInfoPtr();
