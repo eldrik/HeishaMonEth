@@ -31,7 +31,7 @@ struct settingsStruct {
   const char* update_username = "admin";
   char wifi_ssid[33] = "";
   char wifi_password[65] = "";
-  char wifi_hostname[40] = "HeishaMon";
+  char wifi_hostname[40] = "HeishaMonETH";
   char ota_password[40] = "heisha";
   char mqtt_server[64];
   char mqtt_port[6] = "1883";
@@ -46,10 +46,10 @@ struct settingsStruct {
   bool optionalPCB = false; //do we emulate an optional PCB?
   bool use_1wire = false; //1wire enabled?
   bool use_s0 = false; //s0 enabled?
-  bool logMqtt = false; //log to mqtt from start
-  bool logHexdump = false; //log hexdump from start
+  bool logMqtt = true; //log to mqtt from start
+  bool logHexdump = true; //log hexdump from start
   bool logSerial1 = true; //log to serial1 (gpio2) from start
-  bool opentherm = true; //opentherm enable flag, current default true for opentherm build
+  bool opentherm = false; //opentherm enable flag, current default true for opentherm build
 
   s0SettingsStruct s0Settings[NUM_S0_COUNTERS];
   gpioSettingsStruct gpioSettings;
