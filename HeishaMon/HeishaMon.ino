@@ -124,6 +124,8 @@ struct timerqueue_t **timerqueue = NULL;
 int timerqueue_size = 0;
 
 
+
+
 /*
     check_wifi will process wifi reconnecting managing
 */
@@ -232,7 +234,7 @@ void mqtt_reconnect()
       mqtt_client.publish(topic, WiFi.localIP().toString().c_str(), true);
       sprintf(topic, "%s/%s", heishamonSettings.mqtt_topic_base, mqtt_ethiptopic);
       mqtt_client.publish(topic, eth.localIP().toString().c_str(), true);
-      
+
       if (heishamonSettings.use_s0) { // connect to s0 topic to retrieve older watttotal from mqtt
         sprintf_P(mqtt_topic, PSTR("%s/%s/WatthourTotal/1"), heishamonSettings.mqtt_topic_base, mqtt_topic_s0);
         mqtt_client.subscribe(mqtt_topic);
@@ -547,6 +549,7 @@ void setupETH() {
   Serial.print("ethernet gateway: ");
   Serial.println(eth.gatewayIP());
 }
+
 void setupOTA() {
   // Port defaults to 8266
   ArduinoOTA.setPort(8266);
@@ -814,9 +817,9 @@ int8_t webserver_cb(struct webserver_t *client, void *dat) {
               if ((!heishamonSettings.opentherm) && (heishamonSettings.listenonly)) {
                 //make sure we disable TX to heatpump-RX using the mosfet so this line is floating and will not disturb cz-taw1
                 //does not work for opentherm version currently
-                //digitalWrite(5, LOW);
+                digitalWrite(5, LOW);
               } else {
-                //digitalWrite(5, HIGH);
+                digitalWrite(5, HIGH);
               }
               switch (client->route) {
                 case 111: {
@@ -996,17 +999,17 @@ void switchSerial() {
   Serial.flush();
   Serial.end();
   Serial.begin(9600, SERIAL_8E1);
-  //Serial.flush();
+  Serial.flush();
   //swap to gpio13 (D7) and gpio15 (D8)
   //Serial.swap(); // auskommentiert um GPIO 13 nicht zu belegen, wird für Ethernet benötigt
   //turn on GPIO's on tx/rx for opentherm part
   //pinMode(1, FUNCTION_3); // auskommentiert um Pin 1 und 3 (TX / RX) weiter für die Kommunikation zur Wärmepumpe zu benutzen
   //pinMode(3, FUNCTION_3); // auskommentiert um Pin 1 und 3 (TX / RX) weiter für die Kommunikation zur Wärmepumpe zu benutzen
 
-  // setupGPIO(heishamonSettings.gpioSettings); //switch extra GPIOs to configured mode
+  setupGPIO(heishamonSettings.gpioSettings); //switch extra GPIOs to configured mode
 
   //mosfet output enable
- // pinMode(0, OUTPUT); // von 5 auf 0 abgeändert um Pin 5 für S0 zu verwenden
+  pinMode(0, OUTPUT); // von 5 auf 0 abgeändert um Pin 5 für S0 zu verwenden
 
   //try to detect if cz-taw1 is connected in parallel
   if (!heishamonSettings.listenonly) {
@@ -1017,7 +1020,7 @@ void switchSerial() {
     else {
       //enable gpio15 after boot using gpio5 (D1) which enables the level shifter for the tx to panasonic
       //do not enable if listen only to keep the line floating
-     // digitalWrite(0, HIGH); // von 5 auf 0 abgeändert um den Pin für S0 verwenden zu können
+      digitalWrite(0, HIGH);
     }
   }
 }
@@ -1069,9 +1072,6 @@ void timer_cb(int nr) {
       case -3: {
           setupWifi(&heishamonSettings);
         } break;
-//      case -4: {
-//          setupETH();
-//        } break;
       case -4: {
           if (rules_parse("/rules.new") == -1) {
             logprintln_P(F("new ruleset failed to parse, using previous ruleset"));
@@ -1138,8 +1138,8 @@ void setup() {
   loadSettings(&heishamonSettings);
 
   setupETH();
-
   setupWifi(&heishamonSettings);
+  
 
   setupMqtt();
   setupHttp();
@@ -1158,8 +1158,8 @@ void setup() {
   //OT begin must be after serial setup
   if (heishamonSettings.opentherm) {
     //always enable mosfets if opentherm is used
-    //digitalWrite(0, HIGH); // von 5 auf 0 abgeändert um Pin 5 für S0 zu verwenden
-    //HeishaOTSetup();
+    digitalWrite(0, HIGH); // von 5 auf 0 abgeändert um Pin 5 für S0 zu verwenden
+    HeishaOTSetup();
   }
 
   rst_info *resetInfo = ESP.getResetInfoPtr();
@@ -1239,7 +1239,6 @@ void loop() {
   if (heishamonSettings.opentherm) {
     HeishaOTLoop(actData, mqtt_client, heishamonSettings.mqtt_topic_base);
   }
-
   read_panasonic_data();
 
   if ((!sending) && (cmdnrel > 0)) { //check if there is a send command in the buffer
@@ -1329,9 +1328,7 @@ void loop() {
     stats += toolongread;
     stats += F(",\"timeout reads\":");
     stats += timeoutread;
-    stats += F(",\"version\":\"");
-    stats += heishamon_version;
-    stats += F("\"}");
+    stats += F("}");
     sprintf_P(mqtt_topic, PSTR("%s/stats"), heishamonSettings.mqtt_topic_base);
     mqtt_client.publish(mqtt_topic, stats.c_str(), MQTT_RETAIN_VALUES);
 

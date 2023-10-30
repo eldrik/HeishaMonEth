@@ -122,7 +122,7 @@ enum OpenThermSmartPower {
 class OpenTherm
 {
   public:
-    OpenTherm(int inPin = 4, int outPin = 5, bool isSlave = false);
+    OpenTherm(int inPin = 0, int outPin = 0, bool isSlave = false);
     volatile OpenThermStatus status;
     void begin(void(*handleInterruptCallback)(void));
     void begin(void(*handleInterruptCallback)(void), void(*processResponseCallback)(unsigned long, OpenThermResponseStatus));
