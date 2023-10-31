@@ -16,8 +16,8 @@ const char* mqtt_topic_s0 PROGMEM = "s0";
 const char* mqtt_logtopic PROGMEM = "log";
 
 const char* mqtt_willtopic PROGMEM = "LWT";
-const char* mqtt_iptopic PROGMEM = "Wifiip";
-const char* mqtt_ethiptopic PROGMEM = "Ethernetip";
+const char* mqtt_iptopic PROGMEM = "Wifi ip";
+const char* mqtt_ethiptopic PROGMEM = "Ethernet ip";
 
 const char* mqtt_send_raw_value_topic PROGMEM = "SendRawValue";
 

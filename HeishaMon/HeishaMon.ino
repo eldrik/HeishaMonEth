@@ -1,5 +1,8 @@
 #define LWIP_INTERNAL
 
+#include <SPI.h>
+//#include <W5100lwIP.h>
+#include <W5500lwIP.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
 #include <DNSServer.h>
@@ -7,9 +10,8 @@
 #include <ArduinoOTA.h>
 #include <DNSServer.h>
 #include <DoubleResetDetect.h>
-#include <SPI.h>
-#include <W5100lwIP.h>
-//#include <W5500lwIP.h>
+
+
 #include <ArduinoJson.h>
 
 #include "lwip/apps/sntp.h"
@@ -26,8 +28,8 @@
 #include "version.h"
 
 #define CSPIN 16
-Wiznet5100lwIP eth(CSPIN);
-// Wiznet5500lwIP eth(CSPIN);
+//Wiznet5100lwIP eth(CSPIN);
+Wiznet5500lwIP eth(CSPIN);
 byte mac[] = {0x00, 0xAA, 0xBB, 0xCC, 0xDE, 0x02};
 
 DNSServer dnsServer;
@@ -129,6 +131,7 @@ int timerqueue_size = 0;
 /*
     check_wifi will process wifi reconnecting managing
 */
+
 void check_wifi()
 {
   if ((WiFi.status() != WL_CONNECTED) && (WiFi.localIP()))  {
@@ -1063,6 +1066,9 @@ void timer_cb(int nr) {
       case -1: {
           LittleFS.begin();
           LittleFS.format();
+          //create first boot file
+          File startupFile = LittleFS.open("/heishamon", "w");
+          startupFile.close(); 
           WiFi.disconnect(true);
           timerqueue_insert(1, 0, -2);
         } break;
@@ -1070,9 +1076,12 @@ void timer_cb(int nr) {
           ESP.restart();
         } break;
       case -3: {
-          setupWifi(&heishamonSettings);
+          setupETH();
         } break;
       case -4: {
+          setupWifi(&heishamonSettings);
+        } break;
+      case -5: {
           if (rules_parse("/rules.new") == -1) {
             logprintln_P(F("new ruleset failed to parse, using previous ruleset"));
             rules_parse("/rules.txt");
@@ -1099,7 +1108,7 @@ void setup() {
 
   setupSerial();
   setupSerial1();
-
+ 
   Serial.println();
   Serial.println(F("--- HEISHAMON ---"));
   Serial.println(F("starting..."));
@@ -1137,13 +1146,13 @@ void setup() {
 
   loadSettings(&heishamonSettings);
 
-  setupETH();
-  setupWifi(&heishamonSettings);
   
+  setupWifi(&heishamonSettings);
+  setupETH();
 
   setupMqtt();
   setupHttp();
-
+  
   sntp_setoperatingmode(SNTP_OPMODE_POLL);
   sntp_init();
 
@@ -1194,11 +1203,13 @@ void send_panasonic_query() {
     send_command(panasonicQuery, PANASONICQUERYSIZE);
     panasonicQuery[3] = 0x10; //setting 4th back to 0x10 for normal data request next time
   } else if (!extraDataBlockChecked) {
-    extraDataBlockChecked = true;
-    log_message(_F("Checking if connected heatpump has extra data"));
-    panasonicQuery[3] = 0x21;
-    send_command(panasonicQuery, PANASONICQUERYSIZE);
-    panasonicQuery[3] = 0x10;   
+    if ((actData[0] == 0x71) && (actData[193] == 0) ) { //do we have data but 0 value in heat consumptiom power, then assume K or L series
+      extraDataBlockChecked = true;
+      log_message(_F("Checking if connected heatpump has extra data"));
+      panasonicQuery[3] = 0x21;
+      send_command(panasonicQuery, PANASONICQUERYSIZE);
+      panasonicQuery[3] = 0x10;   
+    }
   }
 }
 
@@ -1231,8 +1242,10 @@ void loop() {
 
   // check wifi
   check_wifi();
+ 
   // Handle OTA first.
   ArduinoOTA.handle();
+
 
   mqtt_client.loop();
 
@@ -1328,7 +1341,9 @@ void loop() {
     stats += toolongread;
     stats += F(",\"timeout reads\":");
     stats += timeoutread;
-    stats += F("}");
+    stats += F(",\"version\":\"");
+    stats += heishamon_version;
+    stats += F("\"}");
     sprintf_P(mqtt_topic, PSTR("%s/stats"), heishamonSettings.mqtt_topic_base);
     mqtt_client.publish(mqtt_topic, stats.c_str(), MQTT_RETAIN_VALUES);
 

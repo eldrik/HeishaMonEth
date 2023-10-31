@@ -1260,7 +1260,7 @@ int showRules(struct webserver_t *client) {
 
       if (len1 > 0) {
         webserver_send_content(client, content, len1);
-        if (len1 < BUFFER_SIZE) {
+        if (len1 < BUFFER_SIZE || client->content * BUFFER_SIZE == len) {
           if (f) {
             if (*f) {
               f->close();
