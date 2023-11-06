@@ -316,8 +316,7 @@ Tools > Non-32-Bit Access > Byte/Word access to IRAM/PROGMEM (very slow)
 [Current list of documented MQTT topics can be found here](MQTT-Topics.md)
 
 ## DS18b20 1-wire support
-The software also supports ds18b20 1-wire temperature sensors reading. A proper 1-wire configuration (with 4.7kohm pull-up resistor) connected to GPIO15 will be read each configured secs (minimal 5) and send at the panasonic_heat_pump/1wire/"sensor-hex-address" topic. On the pre-made boards this 4.7kohm resistor is already installed.
-
+The software also supports ds18b20 1-wire temperature sensors reading. A proper 1-wire configuration (with 4.7kohm pull-up resistor) connected to GPIO15 will be read each configured secs (minimal 5) and send at the panasonic_heat_pump/1wire/"sensor-hex-address" topic. 
 
 ## Protocol byte decrypt info:
 [Current list of documented bytes decrypted can be found here](ProtocolByteDecrypt.md)
