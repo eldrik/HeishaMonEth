@@ -255,6 +255,19 @@ A factory reset can be performed on the web interface but if the web interface i
 # Further information
 Below you can find some technical details about the project. How to build your own cables. How to build your own PCB etc.
 
+# Wiring the Ethernet Shield
+
+
+| SPI PHY | --- | ESP8266   |
+|---------|-----|-----------|
+| SCK     | --- | GPIO14    |
+| MISO    | --- | GPIO12    |
+| MOSI    | --- | GPIO13    |
+| CS      | --- | GPIO16(*) |
+| RST     | --- | RESET     |
+
+(*) You can change in source code
+
 ## Connection details:
 Communication can be established thru one of the two sockets: CN-CNT or CN-NMODE. If you have an existing Panasonic CZ-TAW1 WiFi interface that you want to replace with HeishaMon, it is only a matter of plugging the cable out from CZ-TAW1 and reconnecting to your HeishaMon device. However it is not possible to use HeishaMon and the original CZ-TAW1 module together as an active device. It is however possible to put HeishaMon on "Listen Only" mode which will allow HeishaMon and the original CZ-TAW1 module to co-exist. The only downside to this is that HeishaMon is unable to send commands and use the optional PCB option.
 
@@ -298,6 +311,8 @@ The PCB's needed to connect to the heatpump are designed by project members and 
 
 To make things easy you can order a completed PCB from some project members: \
 [Tindie shop](https://www.tindie.com/stores/thehognl/) from Igor Ybema (aka TheHogNL) based in the Netherlands
+
+For using the Ethernet Shield you have to create your own pcb or using a breadboard 
 
 ## Building the arduino image yourself
 boards: \
